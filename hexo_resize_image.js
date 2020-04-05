@@ -10,13 +10,18 @@ function hexo_resize_image()
     for (var i = imgs.length - 1; i >= 0; i--) 
     {
         var img = imgs[i];
+        try{
+            var src = img.getAttribute('src').toString();
+        }catch{
+            src = img.getAttribute('data-src').toString();
+        }
 
-        var src = img.getAttribute('src').toString();
+        var fields = src.match(/\?\d*x\d*/g);
 
-        var fields = src.match(/(?<=\?)\d*x\d*/g);
         if (fields && fields.length == 1)
         {
-            var values = fields[0].split("x");
+            fields=fields[0].toString().replace('?','');
+            var values = fields.split("x");
             if (values.length == 2)
             {
                 var width = values[0];
@@ -40,10 +45,12 @@ function hexo_resize_image()
             continue;
         }
 
-        fields = src.match(/(?<=\?)\d*/g);
+        fields = src.match(/\d*/g);
+        
         if (fields && fields.length == 1)
         {
-            var scale = parseFloat(fields[0].toString());
+            fields=fields[0].toString().replace('?','');
+            var scale = parseFloat(fields);
             var width = scale/100.0*img.naturalWidth;
             var height = scale/100.0*img.naturalHeight;
             set_image_size(img, width, height);
